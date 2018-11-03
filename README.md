@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal dotfiles. 
+Personal dotfiles.
 
 ## Ubuntu 18.04 setup
 
@@ -29,29 +29,7 @@ git config --global user.name "Owain Lewis"
 
 ssh-keygen -t rsa
 
-# Install Emacs 26
+# Use installer scripts for everything else i.e.
 
-sudo add-apt-repository ppa:kelleyk/emacs
-sudo apt-get update
-sudo apt install -y emacs26
-
-# Install Chrome
-
-wget "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt install -f
-
-# Install Haskell Stack
-
-curl -sSL https://get.haskellstack.org/ | sh
-
-# Install Oh My ZSH
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
-# Install Golang
-
-wget -q https://storage.googleapis.com/golang/getgo/installer_linux
-chmod +x installer_linux
-./installer_linux
+./scripts/chrome.sh
 ```
