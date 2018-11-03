@@ -10,6 +10,10 @@ source $ZSH/oh-my-zsh.sh
 
 DOTFILES="$HOME/dotfiles"
 
+export PATH=$PATH:/home/owain/.go/bin
+export GOPATH=/home/owain/go
+export PATH=$PATH:/home/owain/go/bin
+
 if [ -d "$DOTFILES" ]; then
     source ~/dotfiles/.functions
     source ~/dotfiles/.aliases
