@@ -11,7 +11,14 @@ sudo apt update && apt upgrade -y
 
 # Install core packages
 
-sudo apt install -y build-essential libncurses-dev git emacs zsh gnome-tweak-tool curl
+sudo apt install -y \
+build-essential \
+libncurses-dev \
+git \
+emacs \
+zsh gnome-tweak-tool \
+curl \
+i3
 
 # Setup Git user information
 
