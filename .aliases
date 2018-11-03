@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Kubernetes
+# ======================================
+
+alias k="kubectl"
+alias ks="kubectl -n kube-system"

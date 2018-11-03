@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Find a file 
+function reload () {
+    source ~/.zshrc
+}
+
+# Find a file
 function find-file () {
 	find . -name "$1"
 }
