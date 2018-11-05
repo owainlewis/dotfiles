@@ -4,7 +4,10 @@ function reload () {
     source ~/.zshrc
 }
 
-# Find a file
 function find-file () {
-	find . -name "$1"
+    find . -name "$1"
+}
+
+function kube-latest () {
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/stable.txt
 }

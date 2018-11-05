@@ -2,9 +2,16 @@
 
 Personal dotfiles.
 
+## Install
+
+```
+git clone git@github.com:owainlewis/dotfiles.git ~/dotfiles
+ln -s ~/dotfiles/.zshrc ~/.zshrc
+```
+
 ## Ubuntu 18.04 setup
 
-The following describes a basic "from scratch" setup of my prefered environment
+The following describes a basic "from scratch" setup of my prefered Ubuntu environment
 
 ```sh
 sudo apt update && apt upgrade -y
