@@ -1,0 +1,25 @@
+[user]
+	name = Owain Lewis
+	email = owain@owainlewis.com
+
+[init]
+	defaultBranch = main
+
+[core]
+	editor = emacs
+	excludesfile = ~/.config/git/ignore
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rerere]
+	enabled = true
+
+[diff]
+	algorithm = histogram
+
+[merge]
+	conflictstyle = zdiff3

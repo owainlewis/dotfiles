@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors
+*~
+\#*\#
+.\#*
+*.swp
+*.swo
+.vscode/settings.json
+.vscode/launch.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+.secrets
+*.pem
+*.key
+credentials.json
+service-account*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+*.egg
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+.vercel
+
+# Claude
+**/.claude/settings.local.json
+
+# Misc
+*.log
+.terraform/

@@ -1,0 +1,6 @@
+--target=~/.config
+--ignore=\.stowrc
+--ignore=install\.sh
+--ignore=\.git
+--ignore=\.gitignore
+--ignore=DS_Store
