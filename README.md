@@ -6,6 +6,7 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 
 - **ghostty** -- terminal config (Tokyo Night, JetBrains Mono, split panes)
 - **git** -- global git config and ignore patterns
+- **pi** -- [Pi coding agent](https://pi.dev) settings (model, provider, skills)
 
 ## Install
 
@@ -20,7 +21,7 @@ The install script will:
 1. Install Homebrew (if missing)
 2. Install GNU Stow
 3. Install JetBrains Mono font
-4. Symlink configs into `~/.config/` via Stow
+4. Symlink configs into `~/.config/` via Stow (and `~/.pi/` for Pi)
 
 ## Structure
 

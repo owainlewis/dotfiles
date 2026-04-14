@@ -1,0 +1,9 @@
+{
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-5.3-codex",
+  "skills": [
+    "~/Code/github/owainlewis/blueprint/skills"
+  ],
+  "quietStartup": true,
+  "defaultThinkingLevel": "high"
+}
