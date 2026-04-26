@@ -133,6 +133,12 @@ ensure_font() {
     return
   fi
 
+  # Check if fonts already exist (regardless of brew's tracking)
+  if ls "$HOME/Library/Fonts/JetBrainsMono"*.ttf >/dev/null 2>&1; then
+    ok "JetBrains Mono already installed"
+    return
+  fi
+
   if brew list --cask font-jetbrains-mono >/dev/null 2>&1; then
     ok "JetBrains Mono already installed"
     return
@@ -140,6 +146,47 @@ ensure_font() {
 
   run brew install --cask font-jetbrains-mono
   ok "JetBrains Mono"
+}
+
+configure_git() {
+  info "Git configuration"
+
+  local git_config_path="$HOME/.config/git/config"
+  if [[ ! -f "$git_config_path" ]]; then
+    warn "Git config not found at $git_config_path (stow may not have run yet)"
+    return
+  fi
+
+  # Check if placeholders still exist
+  if ! grep -q "{{GIT_USER_NAME}}" "$git_config_path" 2>/dev/null; then
+    ok "Git already configured"
+    return
+  fi
+
+  echo ""
+  echo "Please configure your Git settings:"
+  echo ""
+
+  local name email editor
+
+  read -rp "Your name: " name
+  read -rp "Your email: " email
+  read -rp "Preferred editor [emacs]: " editor
+  editor=${editor:-emacs}
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] Would update git config with:"
+    echo "[dry-run]   name: $name"
+    echo "[dry-run]   email: $email"
+    echo "[dry-run]   editor: $editor"
+  else
+    sed -i.bak "s/{{GIT_USER_NAME}}/$name/g" "$git_config_path"
+    sed -i.bak "s/{{GIT_USER_EMAIL}}/$email/g" "$git_config_path"
+    sed -i.bak "s/{{GIT_EDITOR}}/$editor/g" "$git_config_path"
+    rm -f "$git_config_path.bak"
+  fi
+
+  ok "Git configured"
 }
 
 link_configs() {
@@ -178,6 +225,7 @@ ensure_brew
 ensure_packages
 ensure_font
 link_configs
+configure_git
 
 echo ""
 echo "Open a new Ghostty window to pick up changes."
