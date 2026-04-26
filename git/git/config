@@ -1,12 +1,12 @@
 [user]
-	name = Owain Lewis
-	email = owain@owainlewis.com
+	name = {{GIT_USER_NAME}}
+	email = {{GIT_USER_EMAIL}}
 
 [init]
 	defaultBranch = main
 
 [core]
-	editor = emacs
+	editor = {{GIT_EDITOR}}
 	excludesfile = ~/.config/git/ignore
 
 [pull]
