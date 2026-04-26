@@ -203,22 +203,70 @@ link_configs() {
 
   if [[ "$DRY_RUN" == true ]]; then
     echo "[dry-run] cd $DOTFILES"
-    echo "[dry-run] stow ${targets[*]}"
+    echo "[dry-run] stow --adopt ${targets[*]}"
   else
     cd "$DOTFILES"
-    stow "${targets[@]}"
+    stow --adopt "${targets[@]}"
   fi
 
   # Pi coding agent (targets ~/.pi, not ~/.config)
   run mkdir -p "$HOME/.pi"
   if [[ "$DRY_RUN" == true ]]; then
-    echo "[dry-run] stow -t ~/.pi pi"
+    echo "[dry-run] stow --adopt -t ~/.pi pi"
   else
     cd "$DOTFILES"
-    stow -t "$HOME/.pi" pi
+    stow --adopt -t "$HOME/.pi" pi
   fi
 
   ok "Done"
+}
+
+configure_git() {
+  info "Git configuration"
+
+  local git_config_path="$HOME/.config/git/config"
+
+  # Check if git is already configured (globally, regardless of file location)
+  if git config --global user.name >/dev/null 2>&1 && git config --global user.email >/dev/null 2>&1; then
+    ok "Git already configured (user.name and user.email set)"
+    return
+  fi
+
+  if [[ ! -f "$git_config_path" ]]; then
+    warn "Git config not linked yet — skipping interactive setup"
+    return
+  fi
+
+  # Check if placeholders still exist
+  if ! grep -q "{{GIT_USER_NAME}}" "$git_config_path" 2>/dev/null; then
+    ok "Git config linked but no placeholders to fill"
+    return
+  fi
+
+  echo ""
+  echo "Please configure your Git settings:"
+  echo ""
+
+  local name email editor
+
+  read -rp "Your name: " name
+  read -rp "Your email: " email
+  read -rp "Preferred editor [emacs]: " editor
+  editor=${editor:-emacs}
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] Would update git config with:"
+    echo "[dry-run]   name: $name"
+    echo "[dry-run]   email: $email"
+    echo "[dry-run]   editor: $editor"
+  else
+    sed -i.bak "s/{{GIT_USER_NAME}}/$name/g" "$git_config_path"
+    sed -i.bak "s/{{GIT_USER_EMAIL}}/$email/g" "$git_config_path"
+    sed -i.bak "s/{{GIT_EDITOR}}/$editor/g" "$git_config_path"
+    rm -f "$git_config_path.bak"
+  fi
+
+  ok "Git configured"
 }
 
 ensure_brew
