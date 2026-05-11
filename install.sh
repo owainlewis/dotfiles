@@ -18,7 +18,7 @@ Usage: ./install.sh [options]
 
 Options:
   --dry-run                 Print actions without making changes
-  --only <git|ghostty>      Link only one config target
+  --only <git|ghostty|tmux|pi>  Link only one config target
   --platform-test <name>    Override detected platform (for testing)
   -h, --help                Show this help
 EOF
@@ -67,9 +67,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$ONLY" in
-  all|git|ghostty|pi) ;;
+  all|git|ghostty|tmux|pi) ;;
   *)
-    err "Invalid --only value '$ONLY'. Expected one of: git, ghostty, pi"
+    err "Invalid --only value '$ONLY'. Expected one of: git, ghostty, tmux, pi"
     exit 1
     ;;
 esac
@@ -111,18 +111,40 @@ ensure_brew() {
 
 ensure_packages() {
   info "Packages"
-  if command -v stow >/dev/null 2>&1; then
-    ok "stow already installed"
-    return
-  fi
-
   if ! command -v brew >/dev/null 2>&1; then
-    err "brew is not available to install stow"
+    err "brew is not available to install packages"
     exit 1
   fi
 
-  run brew install stow
+  if command -v stow >/dev/null 2>&1; then
+    ok "stow already installed"
+  else
+    run brew install stow
+    ok "stow"
+  fi
+
+  if command -v tmux >/dev/null 2>&1; then
+    ok "tmux already installed"
+  else
+    run brew install tmux
+    ok "tmux"
+  fi
   ok "Packages"
+}
+
+ensure_tpm() {
+  info "TPM (tmux plugin manager)"
+  if [[ -d "$HOME/.tmux/plugins/tpm" ]]; then
+    ok "TPM already installed"
+    return
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm"
+  else
+    git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+  fi
+  ok "TPM"
 }
 
 ensure_font() {
@@ -148,65 +170,28 @@ ensure_font() {
   ok "JetBrains Mono"
 }
 
-configure_git() {
-  info "Git configuration"
-
-  local git_config_path="$HOME/.config/git/config"
-  if [[ ! -f "$git_config_path" ]]; then
-    warn "Git config not found at $git_config_path (stow may not have run yet)"
-    return
-  fi
-
-  # Check if placeholders still exist
-  if ! grep -q "{{GIT_USER_NAME}}" "$git_config_path" 2>/dev/null; then
-    ok "Git already configured"
-    return
-  fi
-
-  echo ""
-  echo "Please configure your Git settings:"
-  echo ""
-
-  local name email editor
-
-  read -rp "Your name: " name
-  read -rp "Your email: " email
-  read -rp "Preferred editor [emacs]: " editor
-  editor=${editor:-emacs}
-
-  if [[ "$DRY_RUN" == true ]]; then
-    echo "[dry-run] Would update git config with:"
-    echo "[dry-run]   name: $name"
-    echo "[dry-run]   email: $email"
-    echo "[dry-run]   editor: $editor"
-  else
-    sed -i.bak "s/{{GIT_USER_NAME}}/$name/g" "$git_config_path"
-    sed -i.bak "s/{{GIT_USER_EMAIL}}/$email/g" "$git_config_path"
-    sed -i.bak "s/{{GIT_EDITOR}}/$editor/g" "$git_config_path"
-    rm -f "$git_config_path.bak"
-  fi
-
-  ok "Git configured"
-}
-
 link_configs() {
   info "Linking configs"
 
   local targets
   if [[ "$ONLY" == "all" ]]; then
-    targets=(ghostty git)
+    targets=(ghostty git tmux)
+  elif [[ "$ONLY" == "pi" ]]; then
+    targets=()
   else
     targets=("$ONLY")
   fi
 
   run mkdir -p "$HOME/.config"
 
-  if [[ "$DRY_RUN" == true ]]; then
-    echo "[dry-run] cd $DOTFILES"
-    echo "[dry-run] stow --adopt ${targets[*]}"
-  else
-    cd "$DOTFILES"
-    stow --adopt "${targets[@]}"
+  if [[ ${#targets[@]} -gt 0 ]]; then
+    if [[ "$DRY_RUN" == true ]]; then
+      echo "[dry-run] cd $DOTFILES"
+      echo "[dry-run] stow --adopt ${targets[*]}"
+    else
+      cd "$DOTFILES"
+      stow --adopt "${targets[@]}"
+    fi
   fi
 
   # Pi coding agent (targets ~/.pi, not ~/.config)
@@ -272,8 +257,14 @@ configure_git() {
 ensure_brew
 ensure_packages
 ensure_font
+if [[ "$ONLY" == "all" || "$ONLY" == "tmux" ]]; then
+  ensure_tpm
+fi
 link_configs
 configure_git
 
 echo ""
 echo "Open a new Ghostty window to pick up changes."
+if [[ "$ONLY" == "all" || "$ONLY" == "tmux" ]]; then
+  echo "In tmux, press 'prefix + I' (Ctrl-b then Shift-i) to install plugins."
+fi
